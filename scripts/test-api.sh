@@ -19,37 +19,42 @@ if [[ "$code" != "200" ]]; then
 fi
 echo "OK ($code)"
 
-echo ""
-echo "==> POST /api/pedidos"
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
+
+echo ""
+echo "==> POST /api/pedidos (sin auth → 401)"
 http_code=$(curl -sS -o "$tmp" -w "%{http_code}" -X POST "$BASE_URL/api/pedidos" \
   -H "Content-Type: application/json" \
   -d '{"tipo":"traslado","zona":"capital","direccion":"Test script API","urgencia":"media","descripcion":"Smoke test","contactoNombre":"CI","contactoTelefono":"+54 11 0000-0000"}')
-body=$(cat "$tmp")
-if [[ "$http_code" != "201" ]]; then
-  echo "FAIL: esperaba 201, obtuve $http_code"
-  echo "$body"
+if [[ "$http_code" != "401" ]]; then
+  echo "FAIL: esperaba 401, obtuve $http_code"
+  cat "$tmp"
   exit 1
 fi
-id=$(printf "%s" "$body" | node -e "process.stdout.write(JSON.parse(require('fs').readFileSync(0,'utf8')).id)")
-echo "OK ($http_code) id=$id"
+echo "OK ($http_code) — requiere autenticación"
+
+echo ""
+echo "==> POST /api/organizaciones (sin auth → 401)"
+http_code=$(curl -sS -o "$tmp" -w "%{http_code}" -X POST "$BASE_URL/api/organizaciones" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Test","descripcion":"Test","zona":"capital","telefono":"123","email":"a@b.com"}')
+if [[ "$http_code" != "401" ]]; then
+  echo "FAIL: esperaba 401, obtuve $http_code"
+  cat "$tmp"
+  exit 1
+fi
+echo "OK ($http_code) — requiere autenticación"
 
 echo ""
 echo "==> GET /api/pedidos"
 list_code=$(curl -sS -o "$tmp" -w "%{http_code}" "$BASE_URL/api/pedidos")
-list=$(cat "$tmp")
 if [[ "$list_code" != "200" ]]; then
   echo "FAIL: esperaba 200, obtuve $list_code"
-  echo "$list"
+  cat "$tmp"
   exit 1
 fi
-if ! printf "%s" "$list" | grep -q "$id"; then
-  echo "FAIL: el id $id no aparece en el listado"
-  echo "$list"
-  exit 1
-fi
-echo "OK ($list_code), listado incluye el pedido creado"
+echo "OK ($list_code)"
 
 echo ""
 echo "Todos los checks pasaron."
