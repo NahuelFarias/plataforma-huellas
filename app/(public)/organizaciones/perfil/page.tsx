@@ -1,20 +1,16 @@
 import Link from "next/link"
 import Image from "next/image"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
+import { ColectaCard } from "@/components/colecta-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { MapPin, Phone, Mail, Globe, Instagram, Facebook, Twitter, Edit, Car, Clock } from "lucide-react"
 import { HomeIcon } from "lucide-react"
 
 export default function OrganizationProfile() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1 py-12">
+    <div className="py-12">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
@@ -284,97 +280,28 @@ export default function OrganizationProfile() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Fundraiser Card 1 */}
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                          <Badge variant="destructive" className="mb-2">
-                            Urgente
-                          </Badge>
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Clock className="mr-1 h-4 w-4" />
-                            <span>5 días restantes</span>
-                          </div>
-                        </div>
-                        <div className="relative h-48 w-full rounded-md overflow-hidden mb-2">
-                          <Image
-                            src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80"
-                            alt="Perro rescatado"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <CardTitle>Cirugía urgente para Toby</CardTitle>
-                        <CardDescription>
-                          Toby necesita una cirugía de urgencia tras ser atropellado. Ayudanos a cubrir los gastos
-                          veterinarios.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium">Recaudado: $45.000</span>
-                            <span className="text-muted-foreground">Meta: $60.000</span>
-                          </div>
-                          <Progress value={75} className="h-2" />
-                          <p className="text-xs text-muted-foreground text-right">75% completado</p>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="flex justify-between">
-                        <Button variant="outline" size="sm">
-                          Editar
-                        </Button>
-                        <Button variant="secondary" size="sm">
-                          Ver donantes
-                        </Button>
-                      </CardFooter>
-                    </Card>
-
-                    {/* Fundraiser Card 2 */}
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                          <Badge variant="secondary" className="mb-2">
-                            Tratamiento
-                          </Badge>
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Clock className="mr-1 h-4 w-4" />
-                            <span>12 días restantes</span>
-                          </div>
-                        </div>
-                        <div className="relative h-48 w-full rounded-md overflow-hidden mb-2">
-                          <Image
-                            src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1443&q=80"
-                            alt="Gato rescatado"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <CardTitle>Tratamiento para Michi</CardTitle>
-                        <CardDescription>
-                          Michi necesita un tratamiento para una infección respiratoria. Ayudanos a cubrir los
-                          medicamentos.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium">Recaudado: $12.000</span>
-                            <span className="text-muted-foreground">Meta: $20.000</span>
-                          </div>
-                          <Progress value={60} className="h-2" />
-                          <p className="text-xs text-muted-foreground text-right">60% completado</p>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="flex justify-between">
-                        <Button variant="outline" size="sm">
-                          Editar
-                        </Button>
-                        <Button variant="secondary" size="sm">
-                          Ver donantes
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                    <ColectaCard
+                      title="Cirugía urgente para Toby"
+                      description="Toby necesita una cirugía de urgencia tras ser atropellado. Ayudanos a cubrir los gastos veterinarios."
+                      imageSrc="https://images.unsplash.com/photo-1548767797-d8c844163c4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80"
+                      imageAlt="Perro rescatado"
+                      badge="Urgente"
+                      badgeVariant="destructive"
+                      collected={45000}
+                      goal={60000}
+                      daysLeft={5}
+                    />
+                    <ColectaCard
+                      title="Tratamiento para Michi"
+                      description="Michi necesita un tratamiento para una infección respiratoria. Ayudanos a cubrir los medicamentos."
+                      imageSrc="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1443&q=80"
+                      imageAlt="Gato rescatado"
+                      badge="Tratamiento"
+                      badgeVariant="secondary"
+                      collected={12000}
+                      goal={20000}
+                      daysLeft={12}
+                    />
                   </div>
 
                   <div className="mt-6 text-center">
@@ -492,8 +419,6 @@ export default function OrganizationProfile() {
             </div>
           </div>
         </div>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
   )
 }

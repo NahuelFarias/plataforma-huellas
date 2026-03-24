@@ -2,6 +2,8 @@ import type { Pedido } from "@prisma/client"
 import type { Prisma } from "@prisma/client"
 import type { PedidoCreateInput, PedidoPatchInput } from "@/lib/validations/pedido"
 
+export type PedidoJson = ReturnType<typeof pedidoToJson>
+
 export function pedidoToJson(p: Pedido) {
   return {
     id: p.id,

@@ -1,7 +1,9 @@
 "use client"
 
+import type { Session } from "next-auth"
 import Link from "next/link"
-import { Menu } from "lucide-react"
+import { LogOut, Menu } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -16,9 +18,10 @@ import { cn } from "@/lib/utils"
 
 type MobileNavProps = {
   className?: string
+  session: Session | null
 }
 
-export function MobileNav({ className }: MobileNavProps) {
+export function MobileNav({ className, session }: MobileNavProps) {
   return (
     <div className={cn(className)}>
       <Sheet>
@@ -50,16 +53,42 @@ export function MobileNav({ className }: MobileNavProps) {
             ))}
           </nav>
           <div className="flex flex-col gap-2 border-t pt-4">
-            <SheetClose asChild>
-              <Button variant="outline" className="w-full min-h-11" asChild>
-                <Link href="/voluntarios/login">Iniciar sesión</Link>
-              </Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button className="w-full min-h-11" asChild>
-                <Link href="/voluntarios/registro">Registrarse</Link>
-              </Button>
-            </SheetClose>
+            {session?.user ? (
+              <>
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <Avatar className="h-8 w-8">
+                    {session.user.image && (
+                      <AvatarImage src={session.user.image} alt={session.user.name ?? "Avatar"} />
+                    )}
+                    <AvatarFallback>
+                      {session.user.name?.charAt(0)?.toUpperCase() ?? "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium">{session.user.name}</span>
+                </div>
+                <SheetClose asChild>
+                  <form action="/api/auth/signout" method="post">
+                    <Button variant="outline" className="w-full min-h-11 gap-2" type="submit">
+                      <LogOut className="h-4 w-4" />
+                      Cerrar sesión
+                    </Button>
+                  </form>
+                </SheetClose>
+              </>
+            ) : (
+              <>
+                <SheetClose asChild>
+                  <Button variant="outline" className="w-full min-h-11" asChild>
+                    <Link href="/voluntarios/login">Iniciar sesión</Link>
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button className="w-full min-h-11" asChild>
+                    <Link href="/voluntarios/registro">Registrarse</Link>
+                  </Button>
+                </SheetClose>
+              </>
+            )}
           </div>
         </SheetContent>
       </Sheet>
