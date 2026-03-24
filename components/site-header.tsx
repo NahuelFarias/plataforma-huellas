@@ -1,35 +1,36 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { MobileNav } from "@/components/mobile-nav"
+import { navItems } from "@/lib/nav-items"
 import { PawPrint } from "lucide-react"
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="container flex h-16 items-center gap-2">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <PawPrint className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl">Huellas</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="/voluntarios/pedidos" className="text-sm font-medium hover:underline underline-offset-4">
-            Pedidos
-          </Link>
-          <Link href="/colectas" className="text-sm font-medium hover:underline underline-offset-4">
-            Colectas
-          </Link>
-          <Link href="/faq" className="text-sm font-medium hover:underline underline-offset-4">
-            Preguntas frecuentes
-          </Link>
-        </nav>
-        <div className="ml-4 flex items-center gap-2">
-          <Link href="/voluntarios/login">
-            <Button variant="outline" size="sm">
-              Iniciar sesión
-            </Button>
-          </Link>
-          <Link href="/voluntarios/registro">
-            <Button size="sm">Registrarse</Button>
-          </Link>
+        <MobileNav className="ml-auto shrink-0 md:hidden" />
+        <div className="ml-auto flex max-md:hidden items-center gap-4 md:gap-6">
+          <nav className="flex gap-4 sm:gap-6">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} className="text-sm font-medium hover:underline underline-offset-4">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <Link href="/voluntarios/login">
+              <Button variant="outline" size="sm">
+                Iniciar sesión
+              </Button>
+            </Link>
+            <Link href="/voluntarios/registro">
+              <Button size="sm">Registrarse</Button>
+            </Link>
+          </div>
         </div>
       </div>
     </header>
