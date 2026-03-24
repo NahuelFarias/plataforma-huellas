@@ -1,6 +1,4 @@
 import Link from "next/link"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -11,9 +9,7 @@ import { Calendar } from "@/components/ui/calendar"
 
 export default function VolunteerCalendar() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1 py-12">
+    <div className="py-12">
         <div className="container px-4 md:px-6">
           <div className="space-y-2 mb-8">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Mi calendario de disponibilidad</h1>
@@ -224,8 +220,6 @@ export default function VolunteerCalendar() {
             </div>
           </div>
         </div>
-      </main>
-      <SiteFooter />
     </div>
   )
 }

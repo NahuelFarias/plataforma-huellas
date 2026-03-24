@@ -1,6 +1,4 @@
 import Link from "next/link"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -8,9 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function FAQ() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1 py-12">
+      <div className="py-12">
         <div className="container px-4 md:px-6">
           <div className="space-y-2 text-center mb-8">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Preguntas frecuentes</h1>
@@ -263,8 +259,6 @@ export default function FAQ() {
             </Card>
           </div>
         </div>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
   )
 }
