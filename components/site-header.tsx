@@ -34,17 +34,18 @@ export async function SiteHeader() {
             <UserMenu
               name={session.user.name ?? null}
               image={session.user.image ?? null}
+              role={session.user.role ?? null}
               onSignOut={handleSignOut}
             />
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/voluntarios/login">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="min-h-11">
                   Iniciar sesión
                 </Button>
               </Link>
               <Link href="/voluntarios/registro">
-                <Button size="sm">Registrarse</Button>
+                <Button size="sm" className="min-h-11">Registrarse</Button>
               </Link>
             </div>
           )}

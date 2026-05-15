@@ -4,6 +4,7 @@ import type { Session } from "next-auth"
 import Link from "next/link"
 import { LogOut, Menu } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -64,7 +65,12 @@ export function MobileNav({ className, session }: MobileNavProps) {
                       {session.user.name?.charAt(0)?.toUpperCase() ?? "?"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">{session.user.name}</span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium">{session.user.name}</span>
+                    <Badge variant={session.user.role === "organizacion" ? "default" : "secondary"} className="w-fit text-xs">
+                      {session.user.role === "organizacion" ? "Organización" : "Voluntario"}
+                    </Badge>
+                  </div>
                 </div>
                 <SheetClose asChild>
                   <form action="/api/auth/signout" method="post">

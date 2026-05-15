@@ -4,17 +4,29 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Phone, Mail, Globe, Instagram, Facebook, Edit, Clock, MessageSquare } from "lucide-react"
+import { MapPin, Phone, Mail, Globe, Instagram, Facebook, Clock, MessageSquare } from "lucide-react"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { tipoLabels, tipoIcons, urgenciaBadgeVariant, urgenciaLabel, zonaLabels } from "@/lib/pedido-display"
+import { EditarPerfilOrgDialog } from "@/components/editar-perfil-org-dialog"
+import { organizacionToJson } from "@/lib/serializers/organizacion"
 
-export default async function OrganizationProfile() {
+const VALID_TABS = ["about", "requests", "fundraisers", "adoptions"] as const
+
+export default async function OrganizationProfile({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>
+}) {
+  const { tab } = await searchParams
+  const activeTab = VALID_TABS.includes(tab as (typeof VALID_TABS)[number]) ? tab! : "about"
+
   const session = await auth()
   if (!session?.user?.id) redirect("/voluntarios/login")
+  if (!session.user.organizacionId) redirect("/organizaciones/registro")
 
   const org = await prisma.organizacion.findUnique({
-    where: { userId: session.user.id },
+    where: { id: session.user.organizacionId },
   })
   if (!org) redirect("/organizaciones/registro")
 
@@ -23,6 +35,8 @@ export default async function OrganizationProfile() {
     include: { respuestas: { orderBy: { createdAt: "desc" } } },
     orderBy: { createdAt: "desc" },
   })
+
+  const totalRespuestas = pedidos.reduce((sum, p) => sum + p.respuestas.length, 0)
 
   return (
     <div className="py-12">
@@ -82,10 +96,7 @@ export default async function OrganizationProfile() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full" disabled>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar perfil
-                    </Button>
+                    <EditarPerfilOrgDialog org={organizacionToJson(org)} />
                   </CardFooter>
                 </Card>
 
@@ -100,6 +111,10 @@ export default async function OrganizationProfile() {
                         <span className="font-medium">{pedidos.length}</span>
                       </div>
                       <div className="flex justify-between">
+                        <span className="text-muted-foreground">Voluntarios anotados:</span>
+                        <span className="font-medium">{totalRespuestas}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-muted-foreground">Miembro desde:</span>
                         <span className="font-medium">{org.createdAt.toLocaleDateString("es-AR", { month: "long", year: "numeric" })}</span>
                       </div>
@@ -111,7 +126,7 @@ export default async function OrganizationProfile() {
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              <Tabs defaultValue="about" className="w-full">
+              <Tabs defaultValue={activeTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="about">Sobre nosotros</TabsTrigger>
                   <TabsTrigger value="requests">Pedidos activos</TabsTrigger>
@@ -170,29 +185,42 @@ export default async function OrganizationProfile() {
                             <CardContent className="space-y-4">
                               <p>{pedido.descripcion}</p>
 
-                              {pedido.respuestas.length > 0 && (
-                                <div className="border-t pt-4">
-                                  <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
-                                    <MessageSquare className="h-4 w-4" />
-                                    {pedido.respuestas.length} {pedido.respuestas.length === 1 ? "voluntario ofreció ayuda" : "voluntarios ofrecieron ayuda"}
-                                  </h4>
+                              <div className="border-t pt-4">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                                  <MessageSquare className="h-4 w-4" />
+                                  {pedido.respuestas.length === 0
+                                    ? "Sin respuestas aún"
+                                    : `${pedido.respuestas.length} ${pedido.respuestas.length === 1 ? "voluntario ofreció ayuda" : "voluntarios ofrecieron ayuda"}`}
+                                </h4>
+                                {pedido.respuestas.length === 0 ? (
+                                  <p className="text-sm text-muted-foreground">Todavía nadie se anotó en este pedido.</p>
+                                ) : (
                                   <div className="space-y-3">
-                                    {pedido.respuestas.map((r) => (
-                                      <div key={r.id} className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
-                                        <div className="flex justify-between items-start">
-                                          <span className="font-medium">{r.nombre}</span>
-                                          <span className="text-xs text-muted-foreground">{r.createdAt.toLocaleDateString("es-AR")}</span>
+                                    {pedido.respuestas.map((r) => {
+                                      const waNumber = r.whatsapp.replace(/^\+/, "")
+                                      return (
+                                        <div key={r.id} className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
+                                          <div className="flex justify-between items-start">
+                                            <span className="font-medium">{r.nombre}</span>
+                                            <span className="text-xs text-muted-foreground">{r.createdAt.toLocaleDateString("es-AR")}</span>
+                                          </div>
+                                          <div className="flex items-center gap-1 text-muted-foreground">
+                                            <Phone className="h-3 w-3" />
+                                            <Link
+                                              href={`https://wa.me/${waNumber}`}
+                                              target="_blank"
+                                              className="hover:text-foreground hover:underline transition-colors"
+                                            >
+                                              {r.whatsapp}
+                                            </Link>
+                                          </div>
+                                          <p className="text-muted-foreground">{r.mensaje}</p>
                                         </div>
-                                        <div className="flex items-center gap-1 text-muted-foreground">
-                                          <Phone className="h-3 w-3" />
-                                          <span>{r.whatsapp}</span>
-                                        </div>
-                                        <p className="text-muted-foreground">{r.mensaje}</p>
-                                      </div>
-                                    ))}
+                                      )
+                                    })}
                                   </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </CardContent>
                           </Card>
                         )

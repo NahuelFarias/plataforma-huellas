@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format, parse } from "date-fns"
@@ -38,8 +38,8 @@ import type { z } from "zod"
 import { cn } from "@/lib/utils"
 
 export function NuevoPedidoForm() {
+  const router = useRouter()
   const [submitError, setSubmitError] = React.useState<string | null>(null)
-  const [successId, setSuccessId] = React.useState<string | null>(null)
   const [calOpen, setCalOpen] = React.useState(false)
 
   const form = useForm<z.infer<typeof pedidoFormSchema>>({
@@ -55,7 +55,6 @@ export function NuevoPedidoForm() {
 
   async function onSubmit(values: z.infer<typeof pedidoFormSchema>) {
     setSubmitError(null)
-    setSuccessId(null)
     const data = pedidoFormToCreateInput(values)
     let res: Response
     try {
@@ -73,7 +72,11 @@ export function NuevoPedidoForm() {
       setSubmitError(json.error ?? "No se pudo publicar el pedido.")
       return
     }
-    if (json.id) setSuccessId(json.id)
+    if (json.id) {
+      router.refresh()
+      router.push("/organizaciones/perfil?tab=requests")
+      return
+    }
     form.reset({
       tipo: undefined,
       zona: undefined,
@@ -95,19 +98,7 @@ export function NuevoPedidoForm() {
             {submitError}
           </p>
         ) : null}
-        {successId ? (
-          <div className="rounded-lg border border-green-600/40 bg-green-50 p-4 text-sm text-green-900 dark:bg-green-950/40 dark:text-green-100">
-            <p className="font-medium">Pedido publicado correctamente.</p>
-            <p className="mt-1 text-muted-foreground dark:text-green-200/90">
-              Los voluntarios podrán verlo en el listado de pedidos disponibles.
-            </p>
-            <Button asChild variant="link" className="mt-2 h-auto p-0 text-green-800 dark:text-green-100">
-              <Link href="/voluntarios/pedidos">Ver pedidos disponibles</Link>
-            </Button>
-          </div>
-        ) : null}
-
-        <FormField
+<FormField
           control={form.control}
           name="tipo"
           render={({ field }) => (
@@ -220,7 +211,7 @@ export function NuevoPedidoForm() {
                         type="button"
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full min-h-11 justify-start text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -333,7 +324,7 @@ export function NuevoPedidoForm() {
           </p>
         </div>
 
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+        <Button type="submit" className="w-full min-h-11" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Publicando…" : "Publicar pedido"}
         </Button>
       </form>
