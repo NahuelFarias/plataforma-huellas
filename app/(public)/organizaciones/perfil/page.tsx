@@ -79,15 +79,15 @@ export default async function OrganizationProfile({
                         )}
                       </div>
 
-                      <div className="flex gap-4 mt-4">
+                      <div className="flex gap-2 mt-4">
                         {org.instagram && (
-                          <Link href={`https://instagram.com/${org.instagram.replace(/^@/, "")}`} className="text-muted-foreground hover:text-foreground transition-colors" target="_blank">
+                          <Link href={`https://instagram.com/${org.instagram.replace(/^@/, "")}`} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" target="_blank">
                             <Instagram className="h-5 w-5" />
                             <span className="sr-only">Instagram</span>
                           </Link>
                         )}
                         {org.facebook && (
-                          <Link href={org.facebook.startsWith("http") ? org.facebook : `https://facebook.com/${org.facebook}`} className="text-muted-foreground hover:text-foreground transition-colors" target="_blank">
+                          <Link href={org.facebook.startsWith("http") ? org.facebook : `https://facebook.com/${org.facebook}`} className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" target="_blank">
                             <Facebook className="h-5 w-5" />
                             <span className="sr-only">Facebook</span>
                           </Link>
@@ -95,8 +95,13 @@ export default async function OrganizationProfile({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="flex flex-col gap-2">
                     <EditarPerfilOrgDialog org={organizacionToJson(org)} />
+                    <Link href={`/organizaciones/${org.id}`} className="w-full" target="_blank">
+                      <Button variant="ghost" className="w-full min-h-11">
+                        Ver perfil público
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
 
@@ -149,7 +154,7 @@ export default async function OrganizationProfile({
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Pedidos activos</h2>
                     <Link href="/organizaciones/pedidos/nuevo">
-                      <Button>Nuevo pedido</Button>
+                      <Button className="min-h-11">Nuevo pedido</Button>
                     </Link>
                   </div>
 
@@ -233,7 +238,7 @@ export default async function OrganizationProfile({
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Colectas activas</h2>
                     <Link href="/organizaciones/colectas/nueva">
-                      <Button>Nueva colecta</Button>
+                      <Button className="min-h-11">Nueva colecta</Button>
                     </Link>
                   </div>
 
@@ -244,7 +249,7 @@ export default async function OrganizationProfile({
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Animales en adopción</h2>
                     <Link href="/organizaciones/adopciones/nueva">
-                      <Button>Nueva publicación</Button>
+                      <Button className="min-h-11">Nueva publicación</Button>
                     </Link>
                   </div>
 

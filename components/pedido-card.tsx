@@ -3,7 +3,7 @@ import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MapPin, Clock } from "lucide-react"
+import { MapPin, Clock, Building2 } from "lucide-react"
 import type { PedidoJson } from "@/lib/serializers/pedido"
 import { tipoLabels, tipoIcons, zonaLabels, urgenciaBadgeVariant, urgenciaLabel } from "@/lib/pedido-display"
 
@@ -53,10 +53,17 @@ export function PedidoCard({ pedido, imageSrc, showImage = false }: PedidoCardPr
       <CardContent>
         <p>{pedido.descripcion}</p>
       </CardContent>
-      <CardFooter>
-        <Link href={`/voluntarios/pedidos/${pedido.id}`} className="w-full">
-          <Button className="w-full">Quiero ayudar</Button>
+      <CardFooter className="flex gap-2">
+        <Link href={`/voluntarios/pedidos/${pedido.id}`} className="flex-1">
+          <Button className="w-full min-h-11">Quiero ayudar</Button>
         </Link>
+        {pedido.organizacionId && (
+          <Link href={`/organizaciones/${pedido.organizacionId}`}>
+            <Button variant="outline" size="icon" className="min-h-11 min-w-11" title="Ver organización">
+              <Building2 className="h-4 w-4" />
+            </Button>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   )

@@ -7,7 +7,7 @@ import { tipoLabels, tipoIcons, zonaLabels, urgenciaBadgeVariant, urgenciaLabel 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MapPin, Clock, ArrowLeft, Phone, User } from "lucide-react"
+import { MapPin, Clock, ArrowLeft, Phone, User, Building2 } from "lucide-react"
 import { RespuestaForm } from "@/components/respuesta-form"
 
 function isValidObjectId(id: string) {
@@ -19,10 +19,14 @@ export default async function PedidoDetalle({ params }: { params: Promise<{ id: 
 
   if (!isValidObjectId(id)) notFound()
 
-  const raw = await prisma.pedido.findUnique({ where: { id } })
+  const raw = await prisma.pedido.findUnique({
+    where: { id },
+    include: { organizacion: { select: { id: true, nombre: true } } },
+  })
   if (!raw) notFound()
 
   const pedido = pedidoToJson(raw)
+  const org = raw.organizacion
   const session = await auth()
 
   const Icon = tipoIcons[pedido.tipo]
@@ -32,7 +36,7 @@ export default async function PedidoDetalle({ params }: { params: Promise<{ id: 
     <div className="py-12">
       <div className="container px-4 md:px-6 max-w-3xl mx-auto">
         <Link href="/voluntarios/pedidos">
-          <Button variant="ghost" className="mb-6 -ml-2">
+          <Button variant="ghost" className="mb-6 -ml-2 min-h-11">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a pedidos
           </Button>
@@ -74,6 +78,14 @@ export default async function PedidoDetalle({ params }: { params: Promise<{ id: 
               <CardTitle>Contacto de la organización</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              {org && (
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <Link href={`/organizaciones/${org.id}`} className="text-primary hover:underline font-medium">
+                    {org.nombre}
+                  </Link>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span>{pedido.contactoNombre}</span>
