@@ -59,8 +59,9 @@ export function PedidoCard({ pedido, imageSrc, showImage = false }: PedidoCardPr
         </Link>
         {pedido.organizacionId && (
           <Link href={`/organizaciones/${pedido.organizacionId}`}>
-            <Button variant="outline" size="icon" className="min-h-11 min-w-11" title="Ver organización">
+            <Button variant="outline" size="icon" className="min-h-11 min-w-11">
               <Building2 className="h-4 w-4" />
+              <span className="sr-only">Ver organización</span>
             </Button>
           </Link>
         )}
