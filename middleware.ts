@@ -3,16 +3,28 @@ import authConfig from "@/lib/auth.config"
 
 const { auth } = NextAuth(authConfig)
 
-const protectedRoutes = ["/organizaciones/perfil", "/voluntarios/calendario"]
+const authOnlyRoutes = ["/organizaciones/registro", "/voluntarios/calendario"]
+const orgRoutes = ["/organizaciones/perfil", "/organizaciones/pedidos", "/organizaciones/colectas", "/organizaciones/adopciones"]
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route))
+  const needsAuth = authOnlyRoutes.some((route) => pathname.startsWith(route))
+  const needsOrg = orgRoutes.some((route) => pathname.startsWith(route))
 
-  if (isProtected && !req.auth) {
+  if ((needsAuth || needsOrg) && !req.auth) {
     const loginUrl = new URL("/voluntarios/login", req.nextUrl.origin)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return Response.redirect(loginUrl)
+  }
+
+  const role = req.auth?.user?.role
+
+  if (pathname.startsWith("/organizaciones/registro") && role === "organizacion") {
+    return Response.redirect(new URL("/organizaciones/perfil", req.nextUrl.origin))
+  }
+
+  if (needsOrg && role !== "organizacion") {
+    return Response.redirect(new URL("/", req.nextUrl.origin))
   }
 })
 

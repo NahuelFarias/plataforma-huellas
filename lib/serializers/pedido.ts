@@ -16,6 +16,7 @@ export function pedidoToJson(p: Pedido) {
     descripcion: p.descripcion,
     contactoNombre: p.contactoNombre,
     contactoTelefono: p.contactoTelefono,
+    organizacionId: p.organizacionId ?? null,
   }
 }
 

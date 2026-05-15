@@ -13,7 +13,10 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  role          String?   @default("voluntario")
   accounts      Account[]
+  organizacion  Organizacion?
+  respuestas    PedidoRespuesta[]
 }
 
 model Account {
@@ -46,5 +49,40 @@ model Pedido {
   descripcion        String
   contactoNombre     String
   contactoTelefono   String
+  organizacionId     String?   @db.ObjectId
   createdAt          DateTime  @default(now())
+  organizacion       Organizacion? @relation(fields: [organizacionId], references: [id])
+  respuestas         PedidoRespuesta[]
+}
+
+model Organizacion {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String
+  zona        String
+  direccion   String?
+  telefono    String
+  email       String
+  web         String?
+  instagram   String?
+  facebook    String?
+  logo        String?
+  userId      String   @unique @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  pedidos     Pedido[]
+  createdAt   DateTime @default(now())
+}
+
+model PedidoRespuesta {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  pedidoId  String   @db.ObjectId
+  userId    String?  @db.ObjectId
+  nombre    String
+  whatsapp  String
+  mensaje   String
+  ip        String?
+  createdAt DateTime @default(now())
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id])
 }
