@@ -14,6 +14,22 @@ function isValidObjectId(id: string) {
   return /^[a-fA-F0-9]{24}$/.test(id)
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  if (!isValidObjectId(id)) return {}
+  const pedido = await prisma.pedido.findUnique({
+    where: { id },
+    select: { tipo: true, zona: true, descripcion: true },
+  })
+  if (!pedido) return {}
+  const tipo = tipoLabels[pedido.tipo] ?? pedido.tipo
+  const zona = zonaLabels[pedido.zona] ?? pedido.zona
+  return {
+    title: `${tipo} · ${zona} | Huellas`,
+    description: pedido.descripcion,
+  }
+}
+
 export default async function PedidoDetalle({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 

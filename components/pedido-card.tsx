@@ -11,9 +11,10 @@ type PedidoCardProps = {
   pedido: PedidoJson
   imageSrc?: string
   showImage?: boolean
+  hideOrgLink?: boolean
 }
 
-export function PedidoCard({ pedido, imageSrc, showImage = false }: PedidoCardProps) {
+export function PedidoCard({ pedido, imageSrc, showImage = false, hideOrgLink = false }: PedidoCardProps) {
   const Icon = tipoIcons[pedido.tipo]
   const badgeVariant = urgenciaBadgeVariant(pedido.urgencia)
 
@@ -57,7 +58,7 @@ export function PedidoCard({ pedido, imageSrc, showImage = false }: PedidoCardPr
         <Link href={`/voluntarios/pedidos/${pedido.id}`} className="flex-1">
           <Button className="w-full min-h-11">Quiero ayudar</Button>
         </Link>
-        {pedido.organizacionId && (
+        {pedido.organizacionId && !hideOrgLink && (
           <Link href={`/organizaciones/${pedido.organizacionId}`}>
             <Button variant="outline" size="icon" className="min-h-11 min-w-11">
               <Building2 className="h-4 w-4" />
