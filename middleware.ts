@@ -3,7 +3,7 @@ import authConfig from "@/lib/auth.config"
 
 const { auth } = NextAuth(authConfig)
 
-const authOnlyRoutes = ["/organizaciones/registro", "/voluntarios/calendario"]
+const authOnlyRoutes = ["/organizaciones/registro", "/voluntarios/registro", "/voluntarios/calendario"]
 const orgRoutes = ["/organizaciones/perfil", "/organizaciones/pedidos", "/organizaciones/colectas", "/organizaciones/adopciones"]
 
 export default auth((req) => {
@@ -18,9 +18,14 @@ export default auth((req) => {
   }
 
   const role = req.auth?.user?.role
+  const voluntarioId = req.auth?.user?.voluntarioId
 
   if (pathname.startsWith("/organizaciones/registro") && role === "organizacion") {
     return Response.redirect(new URL("/organizaciones/perfil", req.nextUrl.origin))
+  }
+
+  if (pathname.startsWith("/voluntarios/registro") && voluntarioId) {
+    return Response.redirect(new URL("/voluntarios/calendario", req.nextUrl.origin))
   }
 
   if (needsOrg && role !== "organizacion") {

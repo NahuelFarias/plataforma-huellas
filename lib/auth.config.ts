@@ -17,6 +17,7 @@ export default {
       if (token.sub) session.user.id = token.sub
       session.user.role = (token.role as "voluntario" | "organizacion") ?? "voluntario"
       session.user.organizacionId = (token.organizacionId as string) ?? null
+      session.user.voluntarioId = (token.voluntarioId as string) ?? null
       return session
     },
   },
