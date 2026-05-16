@@ -1,10 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 
+import { organizacionCreateSchema, type OrganizacionCreateInput } from "@/lib/validations/organizacion"
+import type { OrganizacionJson } from "@/lib/serializers/organizacion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -24,33 +27,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-const registroOrgSchema = z.object({
-  nombre: z.string().min(1, "Completá el nombre"),
-  descripcion: z.string().min(1, "Completá la descripción"),
-  zona: z.string().optional(),
-  direccion: z.string().optional(),
-  telefono: z.string().min(1, "Completá el teléfono"),
-  email: z.string().email("Ingresá un email válido"),
-  web: z.string().url("Ingresá una URL válida").optional().or(z.literal("")),
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (!data.zona) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Seleccioná una zona",
-      path: ["zona"],
-    })
-  }
-})
-
-type RegistroOrgValues = z.infer<typeof registroOrgSchema>
-
 export function RegistroOrgForm() {
+  const router = useRouter()
+  const { update } = useSession()
   const [submitError, setSubmitError] = React.useState<string | null>(null)
 
-  const form = useForm<RegistroOrgValues>({
-    resolver: zodResolver(registroOrgSchema),
+  const form = useForm<OrganizacionCreateInput>({
+    resolver: zodResolver(organizacionCreateSchema),
     defaultValues: {
       nombre: "",
       descripcion: "",
@@ -63,7 +46,7 @@ export function RegistroOrgForm() {
     },
   })
 
-  async function onSubmit(values: RegistroOrgValues) {
+  async function onSubmit(values: OrganizacionCreateInput) {
     setSubmitError(null)
     let res: Response
     try {
@@ -76,13 +59,14 @@ export function RegistroOrgForm() {
       setSubmitError("No se pudo conectar. Revisá tu conexión o que el servidor esté en marcha.")
       return
     }
-    const json = (await res.json().catch(() => ({}))) as { error?: string }
+    const json = (await res.json().catch(() => ({}))) as OrganizacionJson & { error?: string }
     if (!res.ok) {
       setSubmitError(json.error ?? "No se pudo registrar la organización.")
       return
     }
-    await fetch("/api/auth/session")
-    window.location.href = "/organizaciones/perfil"
+    await update({ role: "organizacion", organizacionId: json.id })
+    router.refresh()
+    router.push("/organizaciones/perfil")
   }
 
   return (
@@ -238,7 +222,7 @@ export function RegistroOrgForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+        <Button type="submit" className="w-full min-h-11" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Registrando…" : "Registrar organización"}
         </Button>
       </form>
